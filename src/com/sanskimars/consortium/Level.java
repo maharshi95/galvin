@@ -48,6 +48,7 @@ public class Level {
 		return (max*(L-r) + min*(r-1))/(L-1);
 	}
 	
+	//returns the minimum timeout for each buffer/column
 	private static int getTimeoutMinLimit(int col) {
 		return TIMEOUT_MIN + (col - 1)*TIMEOUT_INCREMENT;
 	}
