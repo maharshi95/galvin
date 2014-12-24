@@ -40,6 +40,4 @@ public abstract class Timer {
 
 	abstract public void onFinish();
 	
-	
-
 }

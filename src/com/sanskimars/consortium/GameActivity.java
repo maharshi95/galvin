@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Process;
 import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,7 @@ public class GameActivity extends Activity {
 	private Timer timer;
 	private OnClickListener listener;
 	private Thread gameThread;
+	private Thread dummyThread;
 	
 	private boolean gameOver;
 	private boolean waiting;
@@ -47,7 +49,7 @@ public class GameActivity extends Activity {
 	private long interval;
 	private int currentLevel;
 	private HashMap<Integer, Integer> imageIndexMap;
-	private LinkedList<Integer> list;
+	private LinkedList<Integer> indexList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +85,7 @@ public class GameActivity extends Activity {
 		
 		listener = new OnClickListener() {
 			public void onClick(View v) {
-				dummyTile.setText("image tapped: "+imageIndexMap.get(v.getId()));
+				handleUserTap((ImageView)v);
 			}
 		};
 		
@@ -101,7 +103,7 @@ public class GameActivity extends Activity {
 		waiting = false;
 		interval = 100;
 
-		timer = new Timer(1000, interval) {
+		timer = new Timer(2000, interval) {
 
 			public void onTick(long millisUntilFinished) {
 				//show timer animation here
@@ -110,125 +112,144 @@ public class GameActivity extends Activity {
 			public void onFinish() {
 				gameOver = true;
 				waiting = false;
-				log("finished");
+				println("timer finished");
 			}
 		};
 		
 		initGameThread();
+		//timer.start();
+		
+	}
+	
+	private void handleUserTap(ImageView tile) {
+		waiting = false;
+		timer.cancel();
+		int id = imageIndexMap.get(tile.getId());
+		int displayNum = indexList.remove();
+		if (id == displayNum) {
+			timeTakenPerStep = System.currentTimeMillis() - startTime;
+		} else {
+			gameOver = true;
+			println("oops! wrong choice");
+		}
 	}
 	
 	private void initGameThread() {
 		
+		dummyThread = new Thread(new Runnable() {
+			public void run() {
+				int i = 0;
+				while(i<20) {
+					println("hahaha");
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {}
+					i++;
+				}
+			}
+		});
+		
+		//implementation of the gameThread to pop questions 
+		//and start timer for each step of every level
 		gameThread = new Thread() {
 			public void run() {
+				//initializing score,level and disabling the start button
 				runOnUiThread(new Runnable() {
 					public void run() {
 						startButton.setEnabled(false);
 						currentLevel = 1;
 						score = 0;
-						timer.start();
 					}
 				});
+				//looping while the game is not over or player completes all the leves
 				while(!gameOver && currentLevel <= TOTOL_LEVELS) {
 					final Level level = new Level(currentLevel);
-					int buf = level.bufferSize();
-					final int n = level.getRandomIndex();
+					final int buffer = level.bufferSize();
 					runOnUiThread(new Runnable() {
 						public void run() {
-							println(level.toString()+" " + n);
+							println("starting Lv "+currentLevel + " Buffer size: " + buffer);
 						}
 					});
-					list = new LinkedList<Integer>();
-					try {
-						sleep(1000);
-					} catch (InterruptedException e) {
-						return;
-					}
-					for (int i = 0; i < buf; i++) {
-						final int num = level.getRandomIndex();
-						list.add(num);
+					
+					//list to maintain the buffer colors
+					indexList = new LinkedList<Integer>();
+					
+					//displaying the initial colors (of buffer size)  at the start of the level with inteval of 1.5 sec
+					
+					for (int i = 0; i < buffer; i++) {
+						final int colorIndex = level.getRandomIndex();
+						indexList.add(colorIndex);
 						runOnUiThread(new Runnable() {
 							public void run() {
-								dummyTile.setText("" + num);
+								dummyTile.setText("" + colorIndex);
 							}
 						});
-//						try {
-//							sleep(1000);
-//						} catch (InterruptedException e) {
-//							return;
-//						}
+						try {
+							sleep(1500);
+						} catch (InterruptedException e) {
+							return;
+						}
+					}//for
+					
+					runOnUiThread(new Runnable() {
+						public void run() {
+							println("begin...");
+						}
+					});
+					int step = 1;
+					//looping through each step of the level till the game is not over or level is not complete
+					while (step < level.nsteps() && !gameOver) {
+						runOnUiThread(new Runnable() {
+							public void run() {
+								timer.reset(level.timeout(), interval);
+								final int colorIndex = level.getRandomIndex();
+								indexList.add(colorIndex);
+								dummyTile.setText("" + colorIndex);
+							}
+						});
+						//colorIndex added to the end of the buffer and displayed on the center view
+						waiting = true;
+						timer.start();
+						startTime = System.currentTimeMillis();
+						while (waiting); //waiting untill the user clicks or timer interupts
+						
+						if (!gameOver) {
+							level.addToScore(timeTakenPerStep);
+							step++;
+						}
 					}
-					currentLevel++;
+					runOnUiThread(new Runnable() {
+						public void run() {
+							println("Lv "+currentLevel + " complete...");
+						}
+					});
+					if (!gameOver) {
+						score += level.score();
+						currentLevel++;
+					}
 				}
+				String message;
+				if(gameOver) {
+					message = "LOSE!!: Lev: " + (currentLevel - 1) + " time: "+score;
+				}
+				else{
+					message = "WIN!!: Lev: " + (currentLevel - 1) + " time: "+score;
+				}
+				final String msg = message;
+				runOnUiThread(new Runnable() {
+					public void run() {
+						println(msg);
+					}
+				});
 			}
 		};
 	}
 
-	private void handleUserTap(ImageView tile) {
-		waiting = false;
-		timer.cancel();
-		int id = imageIndexMap.get(tile.getId());
-		int displayNum = Integer
-				.parseInt(dummyTile.getText().toString().trim());
-		if (id == displayNum) {
-			timeTakenPerStep = System.currentTimeMillis() - startTime;
-		} else {
-			gameOver = true;
-		}
-	}
+	
 
 	public void startGame(View view) {
-		if(!gameOver) {
-			gameThread.run();
-			return;
-		}
-		startButton.setEnabled(false);
-		currentLevel = 1;
-		score = 0;
-		timer.start();
-		while (!gameOver && currentLevel<= TOTOL_LEVELS) {
-			Level level = new Level(currentLevel);
-			int buf = level.bufferSize();
-			int n = level.getRandomIndex();
-			println(level.toString()+" " + n);
-			list = new LinkedList<Integer>();
-			for (int i = 0; i < buf; i++) {
-				int num = level.getRandomIndex();
-				list.add(num);
-				dummyTile.setText("" + num);
-				try {
-					Thread.sleep(level.timeout());
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			int step = 1;
-			while (step < level.nsteps() && gameOver) {
-				timer.reset(level.timeout(), interval);
-				int num = level.getRandomIndex();
-				list.add(num);
-				dummyTile.setText("" + num);
-				waiting = true;
-				timer.start();
-				startTime = System.currentTimeMillis();
-				while (waiting);
-				if (!gameOver) {
-					level.addToScore(timeTakenPerStep);
-					step++;
-				}
-			}
-			if (!gameOver) {
-				score += level.score();
-				currentLevel++;
-			}
-		}
-		if(gameOver) {
-			log("LOSE!!: Lev: " + (currentLevel - 1) + " time: ");
-		}
-		else{
-			log("WIN!!: Lev: " + (currentLevel - 1) + " time: ");
-		}
+		gameThread.start();
+		
 	}
 
 	public void log(String str) {

@@ -56,26 +56,52 @@ public class Level {
 		
 	}
 	
+	/**
+	 * 
+	 * @return timeout period of each question of this level
+	 */
 	public long timeout() {
 		return timeout;
 	}
 	
+	/**
+	 * Brain memory buffer of this level
+	 * @return
+	 */
 	public int bufferSize() {
 		return bufferSize;
 	}
 	
+	/**
+	 * 
+	 * @return number of questions(steps) in thsi level
+	 */
 	public int nsteps() {
 		return nsteps;
 	}
 	
+	/**
+	 * 
+	 * @return total time taken(score) to solve all the questions
+	 */
 	public long score() {
 		return score;
 	}
 	
+	/**
+	 * Adds the time taken to solve a question to the score of this level
+	 * @param stepScore
+	 */
 	public void addToScore(long stepScore) {
 		score += stepScore;
 	}
 	
+	/**
+	 * Method is used to get a random color index from the set of colors used by this level
+	 * eg: if the level uses indices {0,3,4,6} then it can return any of the four indices,
+	 * where each index resembles a color
+	 * @return
+	 */
 	public int getRandomIndex() {
 		int i = rgen.nextInt(indices.size());
 		return indices.get(i);

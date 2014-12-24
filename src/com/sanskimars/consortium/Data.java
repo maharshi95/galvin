@@ -9,9 +9,9 @@ public class Data {
 	public static final int LEVELS_PER_BUFFER = 8;
 	public static final int MAX_BUFFER = 5;
 	public static final int TOTOL_LEVELS = LEVELS_PER_BUFFER*MAX_BUFFER;
-	public static final int TIMEOUT_INCREMENT = 1000;
-	public static final int TIMEOUT_MIN = 1000;
-	public static final int TIMEOUT_MAX = 3000;
+	public static final int TIMEOUT_INCREMENT = 500;
+	public static final int TIMEOUT_MIN = 3000;
+	public static final int TIMEOUT_MAX = 10000;
 
 	public static final String COLOR_RED = "RED";
 	public static final String COLOR_YELLOW = "YELLOW";
