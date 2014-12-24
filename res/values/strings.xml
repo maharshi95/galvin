@@ -6,5 +6,14 @@
     <string name="action_settings">Settings</string>
     <string name="button_play">Play</string>
     <string name="button_interupt">Cancel Timer</string>
+    <string name="title_activity_game">GameActivity</string>
+    <string name="tile_0">tile_0</string>
+    <string name="tile_1">tile_1</string>
+    <string name="tile_2">tile_2</string>
+    <string name="tile_3">tile_3</string>
+    <string name="tile_4">tile_4</string>
+    <string name="tile_5">tile_5</string>
+    <string name="tile_6">tile_6</string>
+    <string name="tile_7">tile_7</string>
 
 </resources>

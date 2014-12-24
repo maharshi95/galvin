@@ -10,6 +10,12 @@
     	android:layout_height="wrap_content"
     	android:onClick="playAction"
     	android:text="@string/button_play"/>
+
+    <ImageButton
+        android:id="@+id/imageButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher" />
     
     <Button android:id="@+id/button_interupt"
         android:layout_width="wrap_content"

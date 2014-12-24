@@ -1,6 +1,7 @@
 package com.sanskimars.consortium;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 public class MainActivity extends Activity {
 
@@ -53,6 +55,8 @@ public class MainActivity extends Activity {
 		text.setText("Timer interupted by user");
 		timer.cancel();
 		playB.setEnabled(true);
+		Intent intent = new Intent(this,GameActivity.class);
+		startActivity(intent);
 	}
 
 	@Override

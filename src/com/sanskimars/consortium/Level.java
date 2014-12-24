@@ -1,5 +1,8 @@
 package com.sanskimars.consortium;
 import static com.sanskimars.consortium.Data.*;
+
+import java.util.ArrayList;
+import java.util.Random;
 /**
  * Class to simulate and keep the data regarding each level of the game, which includes
  * timeout, buffer size, number of steps, score.
@@ -7,19 +10,53 @@ import static com.sanskimars.consortium.Data.*;
  *
  */
 public class Level {
-	private int timeout;
+	private final Random rgen = new Random();
+	
+	private long timeout;
 	private int bufferSize;
 	private int nsteps;
-	private int score;
+	private long score;
+	private int level;
+	private ArrayList<Integer> indices;
 	
 	public Level(int level) {
+		this.level = level;
 		timeout = getTimeout(level);
 		nsteps = getNSteps(level);
 		bufferSize = getBufferSize(level);
+		indices = new ArrayList<Integer>();
 		score = 0;
+		
+		int r = row(level);
+		int n = 8;
+		
+		if(r <= LEVELS_PER_BUFFER/3)
+			n = 3;
+		else if(r <= 2*LEVELS_PER_BUFFER/3)
+			n = 6;
+		
+		ArrayList<Integer> dummy = new ArrayList<Integer>();
+		boolean[] array = new boolean[N_COLORS];
+		
+		for(int i=0; i<N_COLORS; i++) {
+			dummy.add(i);
+		}
+		
+		for(int i=0; i<n; i++) {
+			int j = rgen.nextInt(N_COLORS);
+			while(array[dummy.get(j)] == true)
+				j = rgen.nextInt(N_COLORS);
+			array[dummy.get(j)] = true;
+		}
+		
+		for(int i=0; i<N_COLORS; i++) {
+			if(array[i] == true)
+				indices.add(i);
+		}
+		
 	}
 	
-	public int timeout() {
+	public long timeout() {
 		return timeout;
 	}
 	
@@ -31,8 +68,17 @@ public class Level {
 		return nsteps;
 	}
 	
-	public void addToScore(int stepScore) {
+	public long score() {
+		return score;
+	}
+	
+	public void addToScore(long stepScore) {
 		score += stepScore;
+	}
+	
+	public int getRandomIndex() {
+		int i = rgen.nextInt(indices.size());
+		return indices.get(i);
 	}
 	
 	/**
@@ -69,6 +115,11 @@ public class Level {
 	
 	private static int getNSteps(int level) {
 		return 10;
+	}
+
+	public String toString() {
+		String str = "Lv: " + level + " T:" + timeout + " C:" + indices.size() + " B:" +bufferSize + " I:" + indices.toString();
+		return str;
 	}
 	
 }
