@@ -28,27 +28,60 @@ import static com.sanskimars.consortium.Data.*;
 
 public class GameActivity extends Activity {
 
+	/**
+	 * UI componenets
+	 */
 	private Button startButton;
 	private RelativeLayout centerView;
 	private ImageView consoLogo;
 	private ImageView[] colorTiles;
 	private TextView console;
-	
 	private TextView dummyTile;
 	
+	/**
+	 * Game control components
+	 */
+	//Countdown timer used for each step of every level
 	private Timer timer;
+	private CountDownTimer cdtimer;
+	
+	//listener for the color tiles
 	private OnClickListener listener;
+	
+	//Thread which runs the game control of popping the questions 
+	//of every level and starting and stopping the timer
 	private Thread gameThread;
+	
 	private Thread dummyThread;
 	
+	
+	/**
+	 * Game State data
+	 */
+	//This variable goes true when player runs out of time to answer a question
 	private boolean gameOver;
+	
+	//This variable goes true when the timer starts and goes false when timer finishes 
+	//or user gives answer to the question
 	private boolean waiting;
+	
+	//The cumulative time taken by the user in millisec to solve the questions answered
 	private long score;
+	
+	// variables used to keep track of time taken by user to solve each answer
 	private long startTime;
 	private long timeTakenPerStep;
+	
+	//timer ticking interval
 	private long interval;
+	
+	//number depecting the current level 
 	private int currentLevel;
-	private HashMap<Integer, Integer> imageIndexMap;
+	private int step;
+	private HashMap<Integer, Integer> tileIndexMap;
+	private HashMap<Integer, Integer> colorIndexMap;
+	private HashMap<Integer, Integer> logoIndexMap;
+	
 	private LinkedList<Integer> indexList;
 
 	@Override
@@ -73,15 +106,15 @@ public class GameActivity extends Activity {
 		colorTiles[6] = (ImageView)findViewById(R.id.tile_6);
 		colorTiles[7] = (ImageView)findViewById(R.id.tile_7);
 		
-		imageIndexMap = new HashMap<Integer, Integer>();
-		imageIndexMap.put(R.id.tile_0, 0);
-		imageIndexMap.put(R.id.tile_1, 1);
-		imageIndexMap.put(R.id.tile_2, 2);
-		imageIndexMap.put(R.id.tile_3, 3);
-		imageIndexMap.put(R.id.tile_4, 4);
-		imageIndexMap.put(R.id.tile_5, 5);
-		imageIndexMap.put(R.id.tile_6, 6);
-		imageIndexMap.put(R.id.tile_7, 7);
+		tileIndexMap = new HashMap<Integer, Integer>();
+		tileIndexMap.put(R.id.tile_0, 0);
+		tileIndexMap.put(R.id.tile_1, 1);
+		tileIndexMap.put(R.id.tile_2, 2);
+		tileIndexMap.put(R.id.tile_3, 3);
+		tileIndexMap.put(R.id.tile_4, 4);
+		tileIndexMap.put(R.id.tile_5, 5);
+		tileIndexMap.put(R.id.tile_6, 6);
+		tileIndexMap.put(R.id.tile_7, 7);
 		
 		listener = new OnClickListener() {
 			public void onClick(View v) {
@@ -101,18 +134,18 @@ public class GameActivity extends Activity {
 
 		gameOver = false;
 		waiting = false;
-		interval = 100;
+		interval = 300;
 
-		timer = new Timer(2000, interval) {
+		timer = new Timer(2000, interval,"") {
 
 			public void onTick(long millisUntilFinished) {
-				//show timer animation here
+				println("timer: " + timer.tag()+ " " + millisUntilFinished);
 			}
 
 			public void onFinish() {
 				gameOver = true;
 				waiting = false;
-				println("timer finished");
+				println("timer: " + timer.tag()+ " finished");
 			}
 		};
 		
@@ -123,11 +156,14 @@ public class GameActivity extends Activity {
 	
 	private void handleUserTap(ImageView tile) {
 		waiting = false;
-		timer.cancel();
-		int id = imageIndexMap.get(tile.getId());
+		cdtimer.cancel();
+		println("timer cancelled");
+		int id = tileIndexMap.get(tile.getId());
 		int displayNum = indexList.remove();
 		if (id == displayNum) {
 			timeTakenPerStep = System.currentTimeMillis() - startTime;
+			setText("");
+			println("yeah, right choice");
 		} else {
 			gameOver = true;
 			println("oops! wrong choice");
@@ -138,14 +174,22 @@ public class GameActivity extends Activity {
 		
 		dummyThread = new Thread(new Runnable() {
 			public void run() {
-				int i = 0;
-				while(i<20) {
-					println("hahaha");
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {}
-					i++;
-				}
+				runOnUiThread(new Runnable() {
+					public void run() {
+						timer.reset(5000, 100, "hello:");
+						timer.start();
+					}
+				});
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {}
+				runOnUiThread(new Runnable() {
+					public void run() {
+						timer.cancel();
+						timer.reset(2000, 200, "hello2");
+						timer.start();
+					}
+				});
 			}
 		});
 		
@@ -196,26 +240,45 @@ public class GameActivity extends Activity {
 							println("begin...");
 						}
 					});
-					int step = 1;
+					step = 1;
 					//looping through each step of the level till the game is not over or level is not complete
 					while (step < level.nsteps() && !gameOver) {
 						runOnUiThread(new Runnable() {
 							public void run() {
-								timer.reset(level.timeout(), interval);
 								final int colorIndex = level.getRandomIndex();
 								indexList.add(colorIndex);
 								dummyTile.setText("" + colorIndex);
+								cdtimer = new CountDownTimer(level.timeout(),interval) {
+									public void onTick(long millisUntilFinished) {
+										onTickAction(millisUntilFinished);
+									}
+									
+									public void onFinish() {
+										onFinishAction();
+									}
+								};
+								cdtimer.start();
 							}
 						});
 						//colorIndex added to the end of the buffer and displayed on the center view
 						waiting = true;
-						timer.start();
 						startTime = System.currentTimeMillis();
-						while (waiting); //waiting untill the user clicks or timer interupts
-						
+						while (waiting); //waiting until the user clicks or timer interupts
+						runOnUiThread(new Runnable() {
+							public void run() {
+								println("waiting over");
+							}
+						});
 						if (!gameOver) {
 							level.addToScore(timeTakenPerStep);
 							step++;
+						}else {
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									println("inner loop: game is over!!");
+								}
+							});
 						}
 					}
 					runOnUiThread(new Runnable() {
@@ -226,6 +289,13 @@ public class GameActivity extends Activity {
 					if (!gameOver) {
 						score += level.score();
 						currentLevel++;
+					}else {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								println("outer loop: game is over!!");
+							}
+						});
 					}
 				}
 				String message;
@@ -245,15 +315,29 @@ public class GameActivity extends Activity {
 		};
 	}
 
+	synchronized public void onFinishAction() {
+		gameOver = true;
+		waiting = false;
+		println("timer: " + timer.tag()+ " finished");
+	}
 	
+	synchronized public void onTickAction(long timeLeft) {
+		println("timer: L:" + currentLevel + " S:" +step + " T: "+ timeLeft + "\n" + indexList);
+		if(gameOver) {
+			println("onTick: gameOver");
+		}
+		else {
+			println("onTick: game not over");
+		}
+	}
 
 	public void startGame(View view) {
 		gameThread.start();
-		
+		//dummyThread.start();
 	}
 
-	public void log(String str) {
-		Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+	public static void log(String str) {
+		Toast.makeText(null, str, Toast.LENGTH_SHORT).show();
 	}
 	
 	public void println(String str) {

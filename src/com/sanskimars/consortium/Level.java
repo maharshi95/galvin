@@ -10,14 +10,45 @@ import java.util.Random;
  *
  */
 public class Level {
+	
+	/**
+	 * Random generator for the instance of this Level
+	 */
 	private final Random rgen = new Random();
 	
+	/**
+	 * Time allotted to solve each question of this level. 
+	 * If player takes more than timeout to answer each question, game gets over
+	 */
 	private long timeout;
+	
+	/**
+	 * The number of colors player needs to remember at a time during this level. 
+	 * This is termed as buffer for this level.
+	 */
 	private int bufferSize;
+	
+	/**
+	 * Number of steps(questions) of the level
+	 */
 	private int nsteps;
+	
+	/**
+	 * It keeps track of time taken by player to answer the questions of this level stepwise.
+	 */
 	private long score;
+	
+	/**
+	 * Level number of this level
+	 */
 	private int level;
+	
+	/**
+	 * List of color indices used for this level
+	 * These indices are from 0 to 7
+	 */
 	private ArrayList<Integer> indices;
+	
 	
 	public Level(int level) {
 		this.level = level;
