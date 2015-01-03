@@ -1,5 +1,8 @@
 package com.sanskimars.consortium;
 import static com.sanskimars.consortium.Data.*;
+
+import java.util.ArrayList;
+import java.util.Random;
 /**
  * Class to simulate and keep the data regarding each level of the game, which includes
  * timeout, buffer size, number of steps, score.
@@ -7,32 +10,132 @@ import static com.sanskimars.consortium.Data.*;
  *
  */
 public class Level {
-	private int timeout;
+	
+	/**
+	 * Random generator for the instance of this Level
+	 */
+	private final Random rgen = new Random();
+	
+	/**
+	 * Time allotted to solve each question of this level. 
+	 * If player takes more than timeout to answer each question, game gets over
+	 */
+	private long timeout;
+	
+	/**
+	 * The number of colors player needs to remember at a time during this level. 
+	 * This is termed as buffer for this level.
+	 */
 	private int bufferSize;
+	
+	/**
+	 * Number of steps(questions) of the level
+	 */
 	private int nsteps;
-	private int score;
+	
+	/**
+	 * It keeps track of time taken by player to answer the questions of this level stepwise.
+	 */
+	private long score;
+	
+	/**
+	 * Level number of this level
+	 */
+	private int level;
+	
+	/**
+	 * List of color indices used for this level
+	 * These indices are from 0 to 7
+	 */
+	private ArrayList<Integer> indices;
+	
 	
 	public Level(int level) {
+		this.level = level;
 		timeout = getTimeout(level);
 		nsteps = getNSteps(level);
 		bufferSize = getBufferSize(level);
+		indices = new ArrayList<Integer>();
 		score = 0;
+		
+		int r = row(level);
+		int n = 8;
+		
+		if(r <= LEVELS_PER_BUFFER/3)
+			n = 3;
+		else if(r <= 2*LEVELS_PER_BUFFER/3)
+			n = 6;
+		
+		ArrayList<Integer> dummy = new ArrayList<Integer>();
+		boolean[] array = new boolean[N_COLORS];
+		
+		for(int i=0; i<N_COLORS; i++) {
+			dummy.add(i);
+		}
+		
+		for(int i=0; i<n; i++) {
+			int j = rgen.nextInt(N_COLORS);
+			while(array[dummy.get(j)] == true)
+				j = rgen.nextInt(N_COLORS);
+			array[dummy.get(j)] = true;
+		}
+		
+		for(int i=0; i<N_COLORS; i++) {
+			if(array[i] == true)
+				indices.add(i);
+		}
+		
 	}
 	
-	public int timeout() {
+	/**
+	 * 
+	 * @return timeout period of each question of this level
+	 */
+	public long timeout() {
 		return timeout;
 	}
 	
+	/**
+	 * Brain memory buffer of this level
+	 * @return
+	 */
 	public int bufferSize() {
 		return bufferSize;
 	}
 	
+	/**
+	 * 
+	 * @return number of questions(steps) in thsi level
+	 */
 	public int nsteps() {
 		return nsteps;
 	}
 	
-	public void addToScore(int stepScore) {
+	/**
+	 * 
+	 * @return total time taken(score) to solve all the questions
+	 */
+	public long score() {
+		return score;
+	}
+	
+	/**
+	 * Adds the time taken to solve a question to the score of this level
+	 * @param stepScore
+	 */
+	public void addToScore(long stepScore) {
 		score += stepScore;
+	}
+	
+	/**
+	 * Method is used to get a random color index from the set of colors used by this level
+	 * eg: if the level uses indices {0,3,4,6} then it can return any of the four indices,
+	 * where each index resembles a color
+	 * @return
+	 */
+	public int getRandomIndex() {
+		int i = rgen.nextInt(indices.size());
+		return indices.get(i);
 	}
 	
 	/**
@@ -70,6 +173,11 @@ public class Level {
 	
 	private static int getNSteps(int level) {
 		return 10;
+	}
+
+	public String toString() {
+		String str = "Lv: " + level + " T:" + timeout + " C:" + indices.size() + " B:" +bufferSize + " I:" + indices.toString();
+		return str;
 	}
 	
 }
