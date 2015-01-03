@@ -42,7 +42,6 @@ public class GameActivity extends Activity {
 	 * Game control components
 	 */
 	//Countdown timer used for each step of every level
-	private Timer timer;
 	private CountDownTimer cdtimer;
 	
 	//listener for the color tiles
@@ -77,7 +76,8 @@ public class GameActivity extends Activity {
 	
 	//number depecting the current level 
 	private int currentLevel;
-	private int step;
+	private int currentStep;
+	
 	private HashMap<Integer, Integer> tileIndexMap;
 	private HashMap<Integer, Integer> colorIndexMap;
 	private HashMap<Integer, Integer> logoIndexMap;
@@ -135,19 +135,6 @@ public class GameActivity extends Activity {
 		gameOver = false;
 		waiting = false;
 		interval = 300;
-
-		timer = new Timer(2000, interval,"") {
-
-			public void onTick(long millisUntilFinished) {
-				println("timer: " + timer.tag()+ " " + millisUntilFinished);
-			}
-
-			public void onFinish() {
-				gameOver = true;
-				waiting = false;
-				println("timer: " + timer.tag()+ " finished");
-			}
-		};
 		
 		initGameThread();
 		//timer.start();
@@ -155,47 +142,47 @@ public class GameActivity extends Activity {
 	}
 	
 	private void handleUserTap(ImageView tile) {
-		waiting = false;
 		cdtimer.cancel();
-		println("timer cancelled");
+		waiting = false;
+		println("1timer cancelled waiting: " + waiting + waiting + "    "+waiting); // this prints false;
+		println("1.1timer cancelled waiting: " + waiting); // this prints false;
 		int id = tileIndexMap.get(tile.getId());
+		//waiting = false;
+		println("2timer cancelled waiting: " + waiting); // this prints true;
 		int displayNum = indexList.remove();
+		//big bug here!! 
+		//println("3timer cancelled waiting: " + waiting); // this prints true, how does it become true???
 		if (id == displayNum) {
 			timeTakenPerStep = System.currentTimeMillis() - startTime;
-			setText("");
-			println("yeah, right choice");
+			setText("yeah, right choice");
 		} else {
+			println("timer cancelled waiting: " + waiting);
 			gameOver = true;
 			println("oops! wrong choice");
+			println("handle user tap else branch: waiting: " + waiting);
 		}
+		//println("handle user tap end line: waiting: " + waiting);
+		//waiting = false;
+		//cdtimer.cancel();
+		//println("handle user tap end line: waiting: " + waiting);
+		println("handle user tap end line: waiting: " + waiting);
+		
 	}
 	
 	private void initGameThread() {
 		
 		dummyThread = new Thread(new Runnable() {
 			public void run() {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						timer.reset(5000, 100, "hello:");
-						timer.start();
-					}
-				});
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {}
-				runOnUiThread(new Runnable() {
-					public void run() {
-						timer.cancel();
-						timer.reset(2000, 200, "hello2");
-						timer.start();
-					}
-				});
+				//TESTING CODE HERE
 			}
 		});
 		
 		//implementation of the gameThread to pop questions 
 		//and start timer for each step of every level
 		gameThread = new Thread() {
+			
+			private Object lock = new Object();
+			
 			public void run() {
 				//initializing score,level and disabling the start button
 				runOnUiThread(new Runnable() {
@@ -205,13 +192,14 @@ public class GameActivity extends Activity {
 						score = 0;
 					}
 				});
-				//looping while the game is not over or player completes all the leves
+				
+				//looping while the game is not over or player completes all the levels
 				while(!gameOver && currentLevel <= TOTOL_LEVELS) {
 					final Level level = new Level(currentLevel);
 					final int buffer = level.bufferSize();
 					runOnUiThread(new Runnable() {
 						public void run() {
-							println("starting Lv "+currentLevel + " Buffer size: " + buffer);
+							setText("starting Lv "+currentLevel + " Buffer size: " + buffer);
 						}
 					});
 					
@@ -219,7 +207,6 @@ public class GameActivity extends Activity {
 					indexList = new LinkedList<Integer>();
 					
 					//displaying the initial colors (of buffer size)  at the start of the level with inteval of 1.5 sec
-					
 					for (int i = 0; i < buffer; i++) {
 						final int colorIndex = level.getRandomIndex();
 						indexList.add(colorIndex);
@@ -229,7 +216,7 @@ public class GameActivity extends Activity {
 							}
 						});
 						try {
-							sleep(1500);
+							sleep(1000);
 						} catch (InterruptedException e) {
 							return;
 						}
@@ -237,12 +224,12 @@ public class GameActivity extends Activity {
 					
 					runOnUiThread(new Runnable() {
 						public void run() {
-							println("begin...");
+							println("Buffer displayed..let the numbers roll!!...");
 						}
 					});
-					step = 1;
+					currentStep = 1;
 					//looping through each step of the level till the game is not over or level is not complete
-					while (step < level.nsteps() && !gameOver) {
+					while (currentStep < level.nsteps() && !gameOver) {
 						runOnUiThread(new Runnable() {
 							public void run() {
 								final int colorIndex = level.getRandomIndex();
@@ -250,7 +237,12 @@ public class GameActivity extends Activity {
 								dummyTile.setText("" + colorIndex);
 								cdtimer = new CountDownTimer(level.timeout(),interval) {
 									public void onTick(long millisUntilFinished) {
-										onTickAction(millisUntilFinished);
+										if(!gameOver) {
+											onTickAction(millisUntilFinished);
+										}else {
+											onTickAction(millisUntilFinished);
+										//	cancel();
+										}
 									}
 									
 									public void onFinish() {
@@ -260,10 +252,19 @@ public class GameActivity extends Activity {
 								cdtimer.start();
 							}
 						});
+						
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {}
+						
+						runOnUiThread(new Runnable() {
+							public void run() {
+								println("setting wait:true");
+							}
+						});
 						//colorIndex added to the end of the buffer and displayed on the center view
-						waiting = true;
 						startTime = System.currentTimeMillis();
-						while (waiting); //waiting until the user clicks or timer interupts
+						while (waiting == true); //waiting until the user clicks or timer interrupts
 						runOnUiThread(new Runnable() {
 							public void run() {
 								println("waiting over");
@@ -271,7 +272,7 @@ public class GameActivity extends Activity {
 						});
 						if (!gameOver) {
 							level.addToScore(timeTakenPerStep);
-							step++;
+							currentStep++;
 						}else {
 							runOnUiThread(new Runnable() {
 								@Override
@@ -283,7 +284,7 @@ public class GameActivity extends Activity {
 					}
 					runOnUiThread(new Runnable() {
 						public void run() {
-							println("Lv "+currentLevel + " complete...");
+							println("loop: Lv "+currentLevel + " over...");
 						}
 					});
 					if (!gameOver) {
@@ -312,17 +313,23 @@ public class GameActivity extends Activity {
 					}
 				});
 			}
+			
+			public void onResume() {
+				synchronized (lock) {
+					lock.notifyAll();
+				}
+			}
 		};
 	}
 
 	synchronized public void onFinishAction() {
 		gameOver = true;
 		waiting = false;
-		println("timer: " + timer.tag()+ " finished");
+		println("timer: finished");
 	}
 	
 	synchronized public void onTickAction(long timeLeft) {
-		println("timer: L:" + currentLevel + " S:" +step + " T: "+ timeLeft + "\n" + indexList);
+		println("timer: L:" + currentLevel + " S:" +currentStep + " T: "+ timeLeft + "\n" + indexList + " wait: " + (waiting?"T":"F"));
 		if(gameOver) {
 			println("onTick: gameOver");
 		}
@@ -342,7 +349,7 @@ public class GameActivity extends Activity {
 	
 	public void println(String str) {
 		String text = console.getText().toString();
-		console.setText(text + str + "\n");
+		console.setText(str + "\n" + text);
 	}
 	
 	public void setText(String str) {

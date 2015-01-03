@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+/**
+ * Class contains all the global data used for the application
+ * @author Maharshi
+ *
+ */
 public class Data {
 	public static final int LEVELS_PER_BUFFER = 8;
 	public static final int MAX_BUFFER = 5;
