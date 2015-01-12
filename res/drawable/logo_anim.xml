@@ -1,0 +1,16 @@
+
+<animation-list 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/logo_anim"
+	android:oneshot="false"
+	>
+    <item android:drawable="@drawable/splash00" android:duration="100" />
+    <item android:drawable="@drawable/splash01" android:duration="100" />
+    <item android:drawable="@drawable/splash02" android:duration="100" />
+    <item android:drawable="@drawable/splash03" android:duration="100" />
+    <item android:drawable="@drawable/splash04" android:duration="100" />
+    <item android:drawable="@drawable/splash05" android:duration="100" />
+    <item android:drawable="@drawable/splash06" android:duration="100" />
+    <item android:drawable="@drawable/splash07" android:duration="100" />
+
+</animation-list>

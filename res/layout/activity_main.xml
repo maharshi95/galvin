@@ -1,36 +1,123 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/background"
     android:orientation="vertical"
-    tools:context="com.sanskimars.consortium.MainActivity" >
+    android:paddingTop="10dp"
+    tools:context="com.consortium.consochrome.MainActivity" >
 
-    <Button android:id="@+id/button_play"
-        android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:onClick="playAction"
-    	android:text="@string/button_play"/>
-
-    <ImageButton
-        android:id="@+id/imageButton1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher" />
-    
-    <Button android:id="@+id/button_interupt"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        android:paddingTop="30dp" >
+
+        <ImageView
+            android:id="@+id/title_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/title" />
+    </LinearLayout>
+
+    <RelativeLayout
         android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:onClick="interuptAction"
-    	android:text="@string/button_interupt"/>
-    
-	<EditText
-    android:id="@+id/editText"
-    android:inputType="text"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:ems="10" />
+        android:id="@+id/main_relative_layout"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <ImageView
+            android:id="@+id/centre_image_view"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/centre_image" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/button_play_tap_tiles"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_style"
+                android:onClick="playtapTiles"
+                android:padding="20dp"
+                android:text="@string/button_play_tap_tiles"
+                android:textSize="20sp"
+                android:textStyle="bold" 
+                android:textColor="@android:color/primary_text_dark"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/display_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/centre_image_view"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text=""
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#004499" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout1"
+            android:layout_alignLeft="@+id/linearLayout1"
+            android:orientation="horizontal"
+            android:padding="0dp"
+            android:paddingTop="30dp" >
+
+            <Button
+                android:id="@+id/button_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_style"
+                android:textColor="#004499"
+                android:onClick="getInfo"
+                android:padding="10dp"
+                android:text="info" />
+
+            <Button
+                android:id="@+id/button_updates"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_style"
+                android:textColor="#004499"
+                android:onClick="getUpdates"
+                android:padding="10dp"
+                android:text="updates" />
+
+            <Button
+                android:id="@+id/button_leaderboard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_style"
+                android:textColor="#004499"
+                android:onClick="getLeaderBoard"
+                android:padding="10dp"
+                android:text="scores" />
+        </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
-
-
-

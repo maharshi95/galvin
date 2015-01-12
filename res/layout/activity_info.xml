@@ -1,0 +1,154 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <TextView
+        android:id="@+id/info_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:text="ConsoChrome"
+        android:textStyle="bold"
+        android:textSize="28sp" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/info_sub_title"
+        android:paddingTop="10dp"
+        android:layout_centerHorizontal="true" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/info_text1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="ConsoChrome, the official Android App of Central India&apos;s largest Management festival - CONSORTIUM, is here!! \n:D"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/info_text2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="The Game is pretty simple, keep tapping the colored tiles from the bottom palette, in the same order in which, the empty tiles from the blank palette are filled.\nRun out of empty tiles and GAME OVER!"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/info_text3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Don&apos;t forget to submit your daily best scores, Exciting goodies reserved for the top scorers...\n(The time for the daily best scores shall be considered from 12:01 am to 11:59 pm)"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/info_text4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Details about the daily prizes and various events will get flashed in the updates section on that day itself. Keep checking that at regular intervals :D"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/info_text5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Users must register their devices with a username to claim goodies. \nA device will be registerd only once, during the first submit with the top Daily score \n\nSubmission and Registration requires good internet connection. This app also supports connection to internet via proxy server. \nUsers may follow that method if required :)"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/info_text6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Let the game begin...\nPlay...Score...Win...\n\nALL THE BEST :)\n"
+                android:fontFamily="fonts/Averia-Regular.ttf"
+                android:textSize="14sp" />
+            
+             <TextView
+                android:id="@+id/info_text7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:paddingTop="5dp"
+                android:text="\nAbout Consortium '15"
+                android:textSize="14sp" />
+             
+             <TextView
+                android:id="@+id/info_text8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Consortium is the Entrepreneurship Summit of E-Cell, VNIT, Nagpur. \nIt's a confluence of activities, events, competitions, conferences and workshops conducted to inculcate a business-minded outlook among technical students. \nBeing one of the biggest summit of its kind, it aims at fostering the importance of leadership and decision making, encouraging entrepreneurship and introducing young technocrats to various management concepts practiced in the corporate world."
+                android:textSize="14sp" />
+             
+             <TextView
+                android:id="@+id/info_text9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Consortium '15 : Jan 24th - 26th"
+                android:textSize="14sp" />
+             
+             
+             <TextView
+                android:id="@+id/info_text10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text=""
+                android:textSize="14sp" />
+             
+              <TextView
+                android:id="@+id/info_text11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:paddingTop="5dp"
+                android:text="\nAbout ConsoChrome"
+                android:textSize="14sp" />
+              
+               <TextView
+                android:id="@+id/info_text12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="ConsoChrome is an open source application."
+                android:textSize="14sp" />
+               
+               <TextView
+                android:id="@+id/info_text13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text=""
+                android:textSize="14sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/info_sub_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/scrollView1"
+        android:layout_below="@+id/info_header"
+        android:text="Consortium &apos;15 Android App"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+</RelativeLayout>
